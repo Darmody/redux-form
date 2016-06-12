@@ -14,6 +14,7 @@ const createField = ({ deepEqual, getIn, setIn }) => {
       }
       this.ConnectedField = createConnectedField(context._reduxForm, { deepEqual, getIn }, props.name)
       this.normalize = this.normalize.bind(this)
+      this.state = {}
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -29,6 +30,11 @@ const createField = ({ deepEqual, getIn, setIn }) => {
         // name changed, regenerate connected field
         this.ConnectedField =
           createConnectedField(this.context._reduxForm, { deepEqual, getIn }, nextProps.name)
+      }
+
+      const syncError = this.getSyncError()
+      if (syncError !== this.state.syncError) {
+        this.setState({ syncError })
       }
     }
 
