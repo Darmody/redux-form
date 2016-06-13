@@ -4,6 +4,8 @@ import createConnectedField from './ConnectedField'
 import shallowCompare from 'react-addons-shallow-compare'
 import plain from './structure/plain'
 
+let previousSyncError = ''
+
 const createField = ({ deepEqual, getIn, setIn }) => {
 
   class Field extends Component {
@@ -14,10 +16,13 @@ const createField = ({ deepEqual, getIn, setIn }) => {
       }
       this.ConnectedField = createConnectedField(context._reduxForm, { deepEqual, getIn }, props.name)
       this.normalize = this.normalize.bind(this)
+      this.state = { previousSyncError: '' }
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-      if (this.context._reduxForm.syncErrors !== nextContext._reduxForm.syncErrors) {
+    shouldComponentUpdate(nextProps, nextState) {
+      const syncError = this.getSyncError()
+      if (syncError !== previousSyncError) {
+        previousSyncError = syncError
         return true
       }
       return shallowCompare(this, nextProps, nextState)
@@ -79,8 +84,8 @@ const createField = ({ deepEqual, getIn, setIn }) => {
     }
 
     getSyncError() {
-      const { _reduxForm: { getSyncErrors } } = this.context
-      const error = plain.getIn(getSyncErrors(), this.props.name)
+      const { _reduxForm: { syncErrors } } = this.context
+      const error = plain.getIn(syncErrors, this.props.name)
       // Because the error for this field might not be at a level in the error structure where
       // it can be set directly, it might need to be unwrapped from the _error property
       return error && error._error ? error._error : error
@@ -90,7 +95,7 @@ const createField = ({ deepEqual, getIn, setIn }) => {
       return createElement(this.ConnectedField, {
         ...this.props,
         normalize: this.normalize,
-        syncError: this.getSyncError(this.context),
+        syncError: this.getSyncError(),
         ref: 'connected'
       })
     }
