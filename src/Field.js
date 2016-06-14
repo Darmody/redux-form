@@ -14,8 +14,8 @@ const createField = ({ deepEqual, getIn }) => {
       this.ConnectedField = createConnectedField(context._reduxForm, { deepEqual, getIn }, props.name)
     }
 
-    shouldComponentUpdate(nextProps) {
-      return shallowCompare(this, nextProps)
+    shouldComponentUpdate(nextProps, nextState) {
+      return shallowCompare(this, nextProps, nextState)
     }
 
     componentWillMount() {
