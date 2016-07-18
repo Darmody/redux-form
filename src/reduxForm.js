@@ -53,7 +53,7 @@ const propsToNotUpdateFor = [
   'array',
   'asyncErrors',
   'initialized',
-  'initialValues',
+  // 'initialValues',
   'syncErrors',
   'values',
   'registeredFields'
